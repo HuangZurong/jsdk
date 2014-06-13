@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <title></title>
+        <script type="text/javascript" src="../../source/dependence/jquery-1.10.0.js"></script>
+        <script type="text/javascript" src="../../source/core/core.js"></script>
+
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+
+//                console.dir(JSDK.lang.randomBoolean());
+//                console.dir(JSDK.lang.randomColor());
+//                $("#test").css("background-color", JSDK.lang.randomColor());
+//                console.dir(JSDK.lang.getUUID());
+//                console.dir( Math.floor(Math.random() * 100) );
+//                console.dir({}.hasOwnProperty ? true : false);
+
+//                console.dir(JSDK.lang.toJSONString({a:"b"}));
+
+//                var arr = [1, true, false, "string", new Date(), function () {
+//                    return false;
+//                }, [], new RegExp(), null, undefined, {},1e100 ];
+//
+//                for (var i in arr) {
+//
+//                    console.dir(arr[i] + "=" + JSDK.lang.isValue(arr[i]));
+//                    console.dir("");
+//                }
+
+//                console.dir( str3.trimLeft() + "=" + str3.length + "=" + str3.trimLeft().length );
+//                console.dir( str3.trimRight() + "=" + str3.length + "=" + str3.trimRight().length );
+//                console.dir( str3.trim() + "=" + str3.length + "=" + str3.trim().length );
+                JSDK.define("a", {
+                    url: "../../test/core/moduleA.js",
+                    requires: [
+                        "b", "c"
+                    ]
+                });
+
+                JSDK.define("b", {
+                    url: "../../test/core/moduleB.js?version=1",
+                    id : "moduleB-js",
+                    requires: ["c"]
+                });
+
+                JSDK.define("c", {
+                    url: "../../test/core/moduleC.js"
+                });
+
+                JSDK.use("a", function () {
+
+                });
+
+                JSDK.define("test",{
+                    url : "../../test/core/test.css"
+                }).use("test");
+            });
+        </script>
+    </head>
+
+    <body>
+        <div id="test" style="width: 20px; height: 20px;"></div>
+    </body>
+</html>
