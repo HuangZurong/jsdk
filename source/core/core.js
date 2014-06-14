@@ -547,6 +547,93 @@ if (!JSDK.lang.isFunction(String.prototype.toJSONString)) {
  * @native Array
  ***************/
 
+/**
+ * Returns the index of a item in the array by asc order.
+ *
+ * @method indexOf
+ * @param {Object} elt The compare element
+ * @param {Function} elt The compare function
+ * * @param {Int} from:optional The default is Zero
+ * @param {Object} thisp:optional The function's this
+ * @return {Int} returns -1 when not found
+ */
+
+Array.prototype.indexOf = function (elt, from, thisp) {
+
+    var len = this.length;
+    var thisP = thisp || this;
+    var fun = LANG.isFunction(elt) ? elt : null;
+    from = isNaN(from) ? 0 : Math.round(from);
+    if (from < 0) {
+        from += len;
+    } else if (from > len) {
+        from = len;
+    }
+
+    for (; from < len; from++) {
+
+        if (fun) {
+            if (fun.call(thisP, this[from], from, this)) {
+                return from;
+            }
+        } else {
+            if (this[from] === elt) {
+                return from;
+            }
+        }
+    }
+
+    return -1;
+};
+
+/**
+ * Returns the index of a item in the array by desc order.
+ *
+ * @method lastIndexOf
+ * @param {Object} elt The compare element
+ * @param {Function} elt The compare function
+ * * @param {Int} from:optional The default is Zero
+ * @param {Object} thisp:optional The function's this
+ * @return {Int} returns -1 when not found
+ */
+Array.prototype.lastIndexOf = function (elt, from, thisp) {
+
+    var len = this.length;
+    var thisP = thisp || this;
+    var fun = LANG.isFunction(elt) ? elt : null;
+    from = isNaN(from) ? len - 1 : Math.round(from);
+    if (from < 0) {
+        from += len;
+    } else if (from >= len) {
+        from = len - 1;
+    }
+
+    for (; from >= 0; from--) {
+        if (fun) {
+            if (fun.call(thisP, this[from], from, this)) {
+                return from;
+            }
+        } else {
+            if (this[from] === elt) {
+                return from;
+            }
+        }
+    }
+
+    return -1;
+};
+
+/**
+ * Execute the callback function for every item.
+ *
+ * @method each
+ * @param {Function} fn
+ * @param {Object}   thisp:optional the function's this
+ * @throws {TypeError} The argument<fn> is not function
+ */
+Array.prototype.each = function () {
+
+};
 
 
 /**********************************************
