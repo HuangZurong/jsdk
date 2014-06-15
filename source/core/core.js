@@ -557,10 +557,9 @@ if (!JSDK.lang.isFunction(String.prototype.toJSONString)) {
  * @param {Object} thisp:optional The function's this
  * @return {Int} returns -1 when not found
  */
-
 Array.prototype.indexOf = function (elt, from, thisp) {
 
-    var len = this.length;
+    var len = this.length >>> 0;
     var thisP = thisp || this;
     var fun = LANG.isFunction(elt) ? elt : null;
     from = isNaN(from) ? 0 : Math.round(from);
@@ -598,7 +597,7 @@ Array.prototype.indexOf = function (elt, from, thisp) {
  */
 Array.prototype.lastIndexOf = function (elt, from, thisp) {
 
-    var len = this.length;
+    var len = this.length >>> 0;
     var thisP = thisp || this;
     var fun = LANG.isFunction(elt) ? elt : null;
     from = isNaN(from) ? len - 1 : Math.round(from);
@@ -631,10 +630,84 @@ Array.prototype.lastIndexOf = function (elt, from, thisp) {
  * @param {Object}   thisp:optional the function's this
  * @throws {TypeError} The argument<fn> is not function
  */
-Array.prototype.each = function () {
+Array.prototype.each = function (fn, thisp) {
 
+    var len = this.length >>> 0;
+    var thisP = thisp || this;
+
+    if (!LANG.isFunction(fn)) {
+        throw new TypeError("[Array#each] The argument<fn> is not function");
+    }
+
+    for (var i = 0; i < len; i++) {
+        fn.call(thisP, this[i], i, this);
+    }
 };
 
+/**
+ * Returns a JSONObject of all items for callback.
+ *
+ * @method toMap
+ * @param {Function} fn returns a array like [key,value]
+ * @param {Object} thisp:optional the function's this
+ * @return {Object}
+ * @throws {TypeError} The argument<fn> is not function
+ */
+Array.prototype.toMap = function (fn, thisp) {
+
+    var len = this.length >>> 0;
+    var thisP = thisp || this;
+
+    if (!LANG.isFunction(fn)) {
+        throw new TypeError("[Array#toMap The arguments<fn> is not function]");
+    }
+
+    var res = {};
+    for (var i = 0; i < len; i++) {
+
+        var rst = fn.call(thisP, this[i], i, this);
+        if (rst && rst.length > 1) {
+            res[rst[0]] = rst[1];
+        }
+    }
+
+    return res;
+};
+
+/**
+ * Mapping the array to a new array by using the callback(fn)
+ *
+ * @method mapping
+ * @param {Function} fn returns a array like [key,value]
+ * @param {Object} thisp:optional the function's this
+ * @return {Object}
+ * @throws {TypeError} The argument<fn> is not function
+ */
+Array.prototype.mapping = function (fn, thisp) {
+
+    var len = this.length >>> 0;
+    var thisP = thisp || this;
+
+    if (!LANG.isFunction(fn)) {
+        throw  new TypeError("[Array#mapping] The argument<fn> is not function");
+    }
+
+    var res = [];
+    for (var i = 0; i < len; i++) {
+        res[i] = fn.call(thisP, this[i], i, this);
+    }
+
+    return res;
+};
+
+
+
+var arr = [1, 2, 3, 4, 5];
+
+console.dir(arr.mapping(function (elem) {
+
+    return elem + 2;
+}));
 
 /**********************************************
  *
@@ -668,7 +741,7 @@ JSDK.lang._escapeString = function (str) {
         '\\': '\\\\'    // reverse solidus  U+005C
     };
 
-    return str.replace(/(?:[\b\t\n\f\r"]|\\)/g,function (_) {
+    return str.replace(/(?:[\b\t\n\f\r"]|\\)/g, function (_) {
         return JSON_ESCAPE[_];
     }).replace(/(?:[\x00-\x1f])/g, function (_) {
         return "\\u00" + ("0" + _.charCodeAt(0).toString(16)).slice(-2);
