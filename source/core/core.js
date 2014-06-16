@@ -617,7 +617,7 @@ if (!JSDK.lang.isFunction(String.prototype.toJSONString)) {
  * @method indexOf
  * @param {Object} elt The compare element
  * @param {Function} elt The compare function
- * * @param {Int} from:optional The default is Zero
+ * @param {Int} from:optional The default is Zero
  * @param {Object} thisp:optional The function's this
  * @return {Int} returns -1 when not found
  */
@@ -655,7 +655,7 @@ Array.prototype.indexOf = function (elt, from, thisp) {
  * @method lastIndexOf
  * @param {Object} elt The compare element
  * @param {Function} elt The compare function
- * * @param {Int} from:optional The default is Zero
+ * @param {Int} from:optional The default is Zero
  * @param {Object} thisp:optional The function's this
  * @return {Int} returns -1 when not found
  */
@@ -887,14 +887,49 @@ Array.prototype.deepClone = function () {
     return LANG.deepClone(this);
 };
 
-var arr = [0, 1, 2, 3, 4, {
-    a: "b"
-}];
+/**
+ * Determines whether or not the item be contains in the array.
+ *
+ * @method contains
+ * @param {Object} elt The compare element
+ * @param {Function} elt The compare function
+ * @param {Int} from:optional the from index
+ * @param {Object} thisp:optional the function's this
+ * @return {Boolean}
+ */
+Array.prototype.contains = function (elt, from, thisp) {
+    return this.indexOf(elt, from, thisp) == -1 ? false : true;
+};
 
+
+/**
+ * Insert some items after the position.
+ *
+ * @method insertAt
+ * @param {Object} index
+ * @param {Object...} item
+ */
+Array.prototype.insertAt = function (index, item) {
+    this.splice(index, 0, item);
+};
+
+var arr = [1, 2, 3, 4, 5, true];
 console.dir(arr);
-var clone = arr.deepClone();
-clone[5].a = "=============";
-console.dir(clone);
+
+/**
+ * If contains the item in the array, then removes it.
+ *
+ * @method remove
+ * @param {Object} elt The compare element
+ * @param {Function} elt The compare function
+ * @param {Int} from:optional the from index
+ * @param {Object} thisp:optional the function's this
+ * @return {Boolean}
+ */
+Array.prototype.remove = function (elt, from, thisp) {
+
+
+};
 
 /**********************************************
  *
