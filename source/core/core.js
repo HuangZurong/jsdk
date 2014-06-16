@@ -700,17 +700,121 @@ Array.prototype.mapping = function (fn, thisp) {
     return res;
 };
 
+/**
+ * If all items passed the function's test, then return true.
+ *
+ * @method every
+ * @param {Function} fn
+ * @param {Object} thisp:optional the function's this
+ * @return {Boolean}
+ * @throws {TypeError} The argument<fn> is not function
+ */
+Array.prototype.every = function (fn, thisp) {
 
+    var len = this.length >>> 0;
+    var thisP = thisp || this;
 
+    if (!LANG.isFunction(fn)) {
+        throw new TypeError("[Array#every] The arguments<fn> is not function");
+    }
 
+    for (var i = 0; i < len; i++) {
 
+        if (!fn.call(thisP, this[i], i, this)) {
+            return false;
+        }
+    }
 
-var arr = [1, 2, 3, 4, 5];
+    return true;
+};
 
-console.dir(arr.mapping(function (elem) {
+/**
+ * If one item passed the function's test, then return true.
+ *
+ * @method some
+ * @param {Function} fn
+ * @param {Object} thisp:optional the function's this
+ * @return {Boolean}
+ * @throws {TypeError} The argument<fn> is not function
+ */
+Array.prototype.some = function (fn, thisp) {
 
-    return elem + 2;
-}));
+    var len = this.length >>> 0;
+    var thisP = thisp || this;
+
+    if (!LANG.isFunction(fn)) {
+        throw new TypeError("[Array#some] The arguments<fn> is not function");
+    }
+
+    for (var i = 0; i < len; i++) {
+
+        if (fn.call(thisP, this[i], i, this)) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+/**
+ * Filter all items to a new Array by the function's test.
+ *
+ * @method filter
+ * @param {Function} fn
+ * @param {Object} thisp:optional the function's this
+ * @return {Array}
+ * @throws {TypeError} The argument<fn> is not function
+ */
+Array.prototype.filter = function (fn, thisp) {
+
+    var len = this.length >>> 0;
+    var thisP = thisp || this;
+
+    if (!LANG.isFunction(fn)) {
+        throw new TypeError("[Array#filter] The arguments<fn> is not function");
+    }
+
+    var res = [];
+
+    for (var i = 0; i < len; i++) {
+
+        var val = this[i];
+        if (fn.call(thisP, val, i, this)) {
+            res.push(val);
+        }
+    }
+
+    return res;
+};
+
+/**
+ * Clear all items to empty.
+ *
+ * @method clear
+ */
+Array.prototype.clear = function () {
+
+    /*
+     *对于javascript中的数组而言有如下的三个特殊行为:
+     * 1. 如果为一个数组元素赋值，它的索引i大于或等于现有数组的长度时，length属性的值将设置为i+1
+     * 2. 如果设置length属性为一个小于当前长度的非负整数n时，当前数组中的那些索引值大于或者等于n的元素将从中删除（本函数就是利用这个特殊行为来清空数组）
+     * 3. 如果设置length属性为大于当前的长度，实际上这不会像数组中添加新的元素，它只是在数组的尾部创建一个空的区域
+     */
+    this.length = 0;
+};
+
+/**
+ * Clone to a new Array.
+ *
+ * @method clone
+ * @return {Array}
+ */
+
+var arr = [0, 1, 2, 3, 3, 4];
+
+console.dir(arr);
+arr.clear();
+console.dir(arr);
 
 /**********************************************
  *
