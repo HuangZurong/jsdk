@@ -340,7 +340,7 @@ JSDK.lang.isPlainObject = function (obj) {
     try {
 
         // Not own constructor property must be Object
-        if (objConstructor == obj.constructor && !obj.hasOwnProperty("constructor") && !objConstructor.prototype.hasOwnProperty("isPrototypeOf")) {
+        if ((objConstructor = obj.constructor) && !obj.hasOwnProperty("constructor") && !objConstructor.prototype.hasOwnProperty("isPrototypeOf")) {
             return false;
         }
     } catch (e) {
@@ -399,6 +399,70 @@ JSDK.lang.isEmptyObject = function (obj) {
     }
 
     return true;
+};
+
+/**
+ * Shallow clone object or array
+ *
+ * @method shallowClone
+ * @static
+ * @param obj The object to clone
+ * @return {Object}/{Array} the clone result
+ */
+JSDK.lang.shallowClone = function (obj) {
+
+    if (LANG.isArray(obj)) {
+
+        return obj.slice(0);
+    }
+
+    if (LANG.isPlainObject(obj)) {
+
+        var res = {};
+        var i;
+        for (i in obj) {
+            res[i] = obj[i];
+        }
+
+        return res;
+    }
+
+    return obj;
+};
+
+/**
+ * Deep clone object or array
+ *
+ * @method deepClone
+ * @static
+ * @param obj The object to clone
+ * @return {Object}/{Array} the clone result
+ */
+JSDK.lang.deepClone = function (obj) {
+
+    if (LANG.isArray(obj)) {
+
+        var res = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+
+            res[i] = arguments.callee(obj[i]);
+        }
+
+        return res;
+    }
+
+    if (LANG.isPlainObject(obj)) {
+
+        var res = {};
+        var i;
+        for (i in obj) {
+
+            res[i] = arguments.callee(obj[i]);
+        }
+        return res;
+    }
+
+    return obj;
 };
 
 /**********************************************
@@ -804,17 +868,33 @@ Array.prototype.clear = function () {
 };
 
 /**
- * Clone to a new Array.
+ * Clone to a new Array(shallow clone).
  *
- * @method clone
+ * @method shallowClone
  * @return {Array}
  */
+Array.prototype.shallowClone = function () {
+    return LANG.shallowClone(this);
+};
 
-var arr = [0, 1, 2, 3, 3, 4];
+/**
+ * Clone to a new Array(deep clone).
+ *
+ * @method deepClone
+ * @return {Array}
+ */
+Array.prototype.deepClone = function () {
+    return LANG.deepClone(this);
+};
+
+var arr = [0, 1, 2, 3, 4, {
+    a: "b"
+}];
 
 console.dir(arr);
-arr.clear();
-console.dir(arr);
+var clone = arr.deepClone();
+clone[5].a = "=============";
+console.dir(clone);
 
 /**********************************************
  *
