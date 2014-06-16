@@ -913,9 +913,6 @@ Array.prototype.insertAt = function (index, item) {
     this.splice(index, 0, item);
 };
 
-var arr = [1, 2, 3, 4, 5, true];
-console.dir(arr);
-
 /**
  * If contains the item in the array, then removes it.
  *
@@ -928,8 +925,33 @@ console.dir(arr);
  */
 Array.prototype.remove = function (elt, from, thisp) {
 
-
+    var index = this.indexOf(elt, from, thisp);
+    if (index > 0) {
+        this.splice(index, 1);
+        return true;
+    } else {
+        return false;
+    }
 };
+
+/**
+ * Removes one item on the index position.
+ *
+ * @method removeAt
+ * @param {Int} index
+ * @return {Boolean}
+ */
+Array.prototype.removeAt = function (index) {
+
+    var len = this.length >>> 0;
+    if (isNaN(index) || index < 0 || index >= len) {
+        return false;
+    }
+
+    this.splice(index, 1);
+    return true;
+};
+
 
 /**********************************************
  *
