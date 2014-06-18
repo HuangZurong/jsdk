@@ -31,30 +31,39 @@
 //                console.dir( str3.trimLeft() + "=" + str3.length + "=" + str3.trimLeft().length );
 //                console.dir( str3.trimRight() + "=" + str3.length + "=" + str3.trimRight().length );
 //                console.dir( str3.trim() + "=" + str3.length + "=" + str3.trim().length );
-                JSDK.define("a", {
-                    url: "../../test/core/moduleA.js",
-                    requires: [
-                        "b", "c"
-                    ]
-                });
+//                JSDK.define("a", {
+//                    url: "../../test/core/moduleA.js",
+//                    requires: [
+//                        "b", "c"
+//                    ]
+//                });
+//
+//                JSDK.define("b", {
+//                    url: "../../test/core/moduleB.js?version=1",
+//                    id : "moduleB-js",
+//                    requires: ["c"]
+//                });
+//
+//                JSDK.define("c", {
+//                    url: "../../test/core/moduleC.js"
+//                });
+//
+//                JSDK.use("a", function () {
+//
+//                });
+//
+//                JSDK.define("test",{
+//                    url : "../../test/core/test.css"
+//                }).use("test");
 
-                JSDK.define("b", {
-                    url: "../../test/core/moduleB.js?version=1",
-                    id : "moduleB-js",
-                    requires: ["c"]
-                });
+                var Clazz = function () {
+                };
+                var arr = [1, false, true, "fucking", function () {
+                }, {}, [2, 1, 3, 4], new Date(), null, undefined, new Clazz()];
 
-                JSDK.define("c", {
-                    url: "../../test/core/moduleC.js"
-                });
-
-                JSDK.use("a", function () {
-
-                });
-
-                JSDK.define("test",{
-                    url : "../../test/core/test.css"
-                }).use("test");
+                console.dir(arr);
+                var newArr = arr.compact();
+                console.dir(newArr);
             });
         </script>
     </head>

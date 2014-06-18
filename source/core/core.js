@@ -952,6 +952,38 @@ Array.prototype.removeAt = function (index) {
     return true;
 };
 
+/**
+ * Returns a new version of the array, without any null/undefined values.
+ *
+ * @method compact
+ * @return {Array}
+ */
+Array.prototype.compact = function () {
+
+    return this.filter(function (elem) {
+        return !LANG.isUndefined(elem) && !LANG.isNull(elem);
+    });
+};
+
+/**
+ * Returns a new array without repeat items.
+ *
+ * @method uniq
+ * @param {Function} fn:optional the equals function
+ * @param {Object} thisp:optional the function's this
+ * @return {Array}
+ */
+Array.prototype.uniq = function () {
+
+
+};
+
+/**
+ * Returns a JSON String of the array.
+ *
+ * @method toJSONString
+ * @return {String}
+ */
 
 /**********************************************
  *
