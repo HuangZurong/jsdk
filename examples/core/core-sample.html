@@ -58,12 +58,16 @@
 
                 var Clazz = function () {
                 };
-                var arr = [1, false, true, "fucking", function () {
+                var arr = [1,1,1, false, true, "fucking", function () {
                 }, {}, [2, 1, 3, 4], new Date(), null, undefined, new Clazz()];
 
-                console.dir(arr);
-                var newArr = arr.compact();
-                console.dir(newArr);
+                var arr2 = [1,2,3,4,5,1,1,2,3,{
+                    a : "b"
+                }];
+                // [1,3,5]
+//                console.dir(arr2);
+                var jsonStr = arr2.toJSONString();
+                console.dir(jsonStr);
             });
         </script>
     </head>

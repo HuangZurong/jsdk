@@ -973,9 +973,40 @@ Array.prototype.compact = function () {
  * @param {Object} thisp:optional the function's this
  * @return {Array}
  */
-Array.prototype.uniq = function () {
+Array.prototype.uniq = function (fn, thisp) {
 
+    if ((this.length >>> 0) < 2) {
+        return LANG.shallowClone(this);
+    }
 
+    var thisP = thisp || this;
+    var res = LANG.shallowClone(this);
+
+    for (var i = 0; i < res.length; i++) {
+
+        for (var j = i + 1; j < res.length;) {
+
+            if (fn && fn.call(thisP, res[i], res[j], this)) {
+                res.splice(j, 1);
+            } else if (res[i] === res[j]) {
+                res.splice(j, 1);
+            } else {
+                j++;
+            }
+        }
+    }
+
+    return res;
+};
+
+/**
+ * Returns a JSON String of the array.
+ *
+ * @method toJSONString
+ * @return {String}
+ */
+Array.prototype.toJSONString = function () {
+    return LANG.stringifyJSON(this);
 };
 
 /**
