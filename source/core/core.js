@@ -393,7 +393,7 @@ JSDK.lang.isValue = function (obj) {
 JSDK.lang.isEmptyObject = function (obj) {
 
     for (var p in obj) {
-        if (this.isUndefined(p)) {
+        if (!this.isUndefined(p)) {
             return false;
         }
     }
@@ -608,6 +608,33 @@ if (!JSDK.lang.isFunction(String.prototype.toJSONString)) {
 }
 
 /***************
+ * Custom Exceptions
+ **************/
+function BaseException() {
+
+};
+BaseException.prototype = new Error();
+BaseException.prototype.constructor = BaseException;
+BaseException.prototype.toString = function () {
+    return "fucking";
+};
+
+/**
+ * Thrown to indicate that a method has been passed an illegal or
+ * inappropriate argument.
+ *
+ * @Class
+ */
+function IllegalArgumentException(message) {
+
+    this.name = "IllegalArgumentException";
+    this.message = message || "The argument is illegal";
+};
+IllegalArgumentException.prototype = new BaseException();
+IllegalArgumentException.prototype.constructor = IllegalArgumentException;
+
+
+/***************
  * @native Array
  ***************/
 
@@ -692,7 +719,7 @@ Array.prototype.lastIndexOf = function (elt, from, thisp) {
  * @method each
  * @param {Function} fn
  * @param {Object}   thisp:optional the function's this
- * @throws {TypeError} The argument<fn> is not function
+ * @throws {IllegalArgumentException} The argument<fn> is not function
  */
 Array.prototype.each = function (fn, thisp) {
 
@@ -700,7 +727,7 @@ Array.prototype.each = function (fn, thisp) {
     var thisP = thisp || this;
 
     if (!LANG.isFunction(fn)) {
-        throw new TypeError("[Array#each] The argument<fn> is not function");
+        throw new IllegalArgumentException("[Array#each] The argument<fn> is not function");
     }
 
     for (var i = 0; i < len; i++) {
@@ -715,7 +742,7 @@ Array.prototype.each = function (fn, thisp) {
  * @param {Function} fn returns a array like [key,value]
  * @param {Object} thisp:optional the function's this
  * @return {Object}
- * @throws {TypeError} The argument<fn> is not function
+ * @throws {IllegalArgumentException} The argument<fn> is not function
  */
 Array.prototype.toMap = function (fn, thisp) {
 
@@ -723,7 +750,7 @@ Array.prototype.toMap = function (fn, thisp) {
     var thisP = thisp || this;
 
     if (!LANG.isFunction(fn)) {
-        throw new TypeError("[Array#toMap The arguments<fn> is not function]");
+        throw new IllegalArgumentException("[Array#toMap The arguments<fn> is not function]");
     }
 
     var res = {};
@@ -745,7 +772,7 @@ Array.prototype.toMap = function (fn, thisp) {
  * @param {Function} fn returns a array like [key,value]
  * @param {Object} thisp:optional the function's this
  * @return {Object}
- * @throws {TypeError} The argument<fn> is not function
+ * @throws {IllegalArgumentException} The argument<fn> is not function
  */
 Array.prototype.mapping = function (fn, thisp) {
 
@@ -753,7 +780,7 @@ Array.prototype.mapping = function (fn, thisp) {
     var thisP = thisp || this;
 
     if (!LANG.isFunction(fn)) {
-        throw  new TypeError("[Array#mapping] The argument<fn> is not function");
+        throw  new IllegalArgumentException("[Array#mapping] The argument<fn> is not function");
     }
 
     var res = [];
@@ -771,7 +798,7 @@ Array.prototype.mapping = function (fn, thisp) {
  * @param {Function} fn
  * @param {Object} thisp:optional the function's this
  * @return {Boolean}
- * @throws {TypeError} The argument<fn> is not function
+ * @throws {IllegalArgumentException} The argument<fn> is not function
  */
 Array.prototype.every = function (fn, thisp) {
 
@@ -779,7 +806,7 @@ Array.prototype.every = function (fn, thisp) {
     var thisP = thisp || this;
 
     if (!LANG.isFunction(fn)) {
-        throw new TypeError("[Array#every] The arguments<fn> is not function");
+        throw new IllegalArgumentException("[Array#every] The arguments<fn> is not function");
     }
 
     for (var i = 0; i < len; i++) {
@@ -799,7 +826,7 @@ Array.prototype.every = function (fn, thisp) {
  * @param {Function} fn
  * @param {Object} thisp:optional the function's this
  * @return {Boolean}
- * @throws {TypeError} The argument<fn> is not function
+ * @throws {IllegalArgumentException} The argument<fn> is not function
  */
 Array.prototype.some = function (fn, thisp) {
 
@@ -807,7 +834,7 @@ Array.prototype.some = function (fn, thisp) {
     var thisP = thisp || this;
 
     if (!LANG.isFunction(fn)) {
-        throw new TypeError("[Array#some] The arguments<fn> is not function");
+        throw new IllegalArgumentException("[Array#some] The arguments<fn> is not function");
     }
 
     for (var i = 0; i < len; i++) {
@@ -827,7 +854,7 @@ Array.prototype.some = function (fn, thisp) {
  * @param {Function} fn
  * @param {Object} thisp:optional the function's this
  * @return {Array}
- * @throws {TypeError} The argument<fn> is not function
+ * @throws {IllegalArgumentException} The argument<fn> is not function
  */
 Array.prototype.filter = function (fn, thisp) {
 
@@ -835,7 +862,7 @@ Array.prototype.filter = function (fn, thisp) {
     var thisP = thisp || this;
 
     if (!LANG.isFunction(fn)) {
-        throw new TypeError("[Array#filter] The arguments<fn> is not function");
+        throw new IllegalArgumentException("[Array#filter] The arguments<fn> is not function");
     }
 
     var res = [];
@@ -1009,12 +1036,105 @@ Array.prototype.toJSONString = function () {
     return LANG.stringifyJSON(this);
 };
 
+
+/****************
+ * @native Number
+ ****************/
+
+
 /**
- * Returns a JSON String of the array.
+ * Determines whether or not the object is a number.
+ * Notice that: if is the object is a infinite number return false.
  *
- * @method toJSONString
- * @return {String}
+ * @static
+ * @method isNumber
+ * @param {String|Number} s
+ * @return {Boolean}
  */
+Number.isNumber = function (s) {
+
+    if (LANG.isNull(s) || LANG.isUndefined(s)) {
+        return false;
+    }
+
+    if (LANG.isString(s)) {
+        var val = s.replace(/,/g, "");
+        // isFinite ：如果 number 是有限数字（或可转换为有限数字），那么返回 true。否则，如果 number 是 NaN（非数字），或者是正、负无穷大的数，则返回 false。
+        return (!val || !isFinite(val)) ? false : true;
+    } else if (LANG.isNumber(s)) {
+        return true;
+    }
+
+    return false;
+};
+
+/**
+ * Transfer a number. The default number is Zero.
+ *
+ * @static
+ * @method toNumber
+ * @param {String|Number} s
+ * @return {Number}
+ */
+Number.toNumber = function (s) {
+
+    if (Number.isNumber(s)) {
+        if (LANG.isString(s)) {
+            return parseFloat(s.replace(/,/g, ""));
+        } else {
+            return Number(s);
+        }
+    } else {
+        throw new BaseException("The argument is not a legal number.");
+    }
+};
+
+/**
+ * Transfer a integer. The default number is Zero.
+ *
+ * @static
+ * @method toInt
+ * @param {String|Number} s
+ * @param {Int} mode:optional rounding mode: (default)0 is round down; 1 is ceil; 2 is floor
+ * @return {Int}
+ */
+Number.toInt = function (s, mode) {
+
+    if (this.isInt(s)) {
+        return s;
+    }
+
+    var num = Number.toNumber(s);
+    mode = mode || 0;
+
+    switch (mode) {
+        case 0:
+            return Math.round(num);
+        case 1:
+            return Math.ceil(num);
+        case 2 :
+            Math.floor(num);
+    }
+};
+
+/**
+ * Determines whether or not the object is a float.
+ *
+ * @static
+ * @method isFloat
+ * @param {String|Number} s
+ * @return {Boolean}
+ */
+Number.isFloat = function (s) {
+
+//    try {
+
+        var num = Number.toNumber(s);
+        return (num + "").indexOf(".") != -1;
+//    } catch (IllegalArgumentException) {
+//        return false;
+//    }
+};
 
 /**********************************************
  *
