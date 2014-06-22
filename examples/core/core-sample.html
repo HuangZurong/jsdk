@@ -3,6 +3,7 @@
     <head>
         <title></title>
         <script type="text/javascript" src="../../source/dependence/jquery-1.10.0.js"></script>
+        <script type="text/javascript" src="../../source/dependence/tracekit.js"></script>
         <script type="text/javascript" src="../../source/core/core.js"></script>
 
         <script type="text/javascript">
@@ -64,11 +65,12 @@
                 var arr2 = [1,2,3,4,5,1,1,2,3,{
                     a : "b"
                 }];
-                // [1,3,5]
 //                console.dir(arr2);
 //                var jsonStr = arr2.toJSONString();
 //                console.dir(jsonStr);
-                console.dir( Number.isFloat("1,200,12....") );
+//                console.dir( Number.isNegative("-1,200,12.1") );
+                var num = 0.12345;
+                console.dir(num.mul("a"));
             });
         </script>
     </head>

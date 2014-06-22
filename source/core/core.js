@@ -611,12 +611,11 @@ if (!JSDK.lang.isFunction(String.prototype.toJSONString)) {
  * Custom Exceptions
  **************/
 function BaseException() {
-
+    return new Error();
 };
 BaseException.prototype = new Error();
-BaseException.prototype.constructor = BaseException;
 BaseException.prototype.toString = function () {
-    return "fucking";
+    return this.name + ": " + this.message;
 };
 
 /**
@@ -631,8 +630,19 @@ function IllegalArgumentException(message) {
     this.message = message || "The argument is illegal";
 };
 IllegalArgumentException.prototype = new BaseException();
-IllegalArgumentException.prototype.constructor = IllegalArgumentException;
 
+/**
+ * Thrown when a stack overflow occurs because an application
+ * recurses too deeply.
+ *
+ * @Class
+ */
+function StackOverflowException(message) {
+
+    this.name = "StackOverflowException";
+    this.message = message || "The recurses too deeply";
+};
+StackOverflowException.prototype = new BaseException();
 
 /***************
  * @native Array
@@ -1058,7 +1068,7 @@ Number.isNumber = function (s) {
     }
 
     if (LANG.isString(s)) {
-        var val = s.replace(/,/g, "");
+        var val = s.trim().replace(/,/g, "");
         // isFinite ：如果 number 是有限数字（或可转换为有限数字），那么返回 true。否则，如果 number 是 NaN（非数字），或者是正、负无穷大的数，则返回 false。
         return (!val || !isFinite(val)) ? false : true;
     } else if (LANG.isNumber(s)) {
@@ -1080,12 +1090,12 @@ Number.toNumber = function (s) {
 
     if (Number.isNumber(s)) {
         if (LANG.isString(s)) {
-            return parseFloat(s.replace(/,/g, ""));
+            return parseFloat(s.trim().replace(/,/g, ""));
         } else {
             return Number(s);
         }
     } else {
-        throw new BaseException("The argument is not a legal number.");
+        throw new IllegalArgumentException("The argument is not a legal number.");
     }
 };
 
@@ -1113,7 +1123,7 @@ Number.toInt = function (s, mode) {
         case 1:
             return Math.ceil(num);
         case 2 :
-            Math.floor(num);
+            return Math.floor(num);
     }
 };
 
@@ -1127,13 +1137,137 @@ Number.toInt = function (s, mode) {
  */
 Number.isFloat = function (s) {
 
-//    try {
+    try {
 
         var num = Number.toNumber(s);
-        return (num + "").indexOf(".") != -1;
-//    } catch (IllegalArgumentException) {
+        return (num.toString()).indexOf(".") != -1;
+    } catch (e) {
+        return false;
+    }
+};
+
+/**
+ * Determines whether or not the object is a Integer.
+ *
+ * @static
+ * @method isInt
+ * @param {String|Number} s
+ * @return {Boolean}
+ */
+Number.isInt = function (s) {
+
+    try {
+
+        var num = Number.toNumber(s);
+        return (num.toString()).indexOf(".") == -1;
+    } catch (e) {
+        return false;
+    }
+};
+
+/**
+ * Determines whether or not the object is a negative number, excludes Zero.
+ *
+ * @static
+ * @method isNegative
+ * @param {String|Number} s
+ * @return {Boolean}
+ */
+Number.isNegative = function (s) {
+
+    try {
+
+        var num = Number.toNumber(s);
+        return (num.toString()).indexOf("-") != -1;
+    } catch (e) {
+        return false;
+    }
+};
+
+//Number.isNegative = function (s) {
+//
+//    try {
+//
+//        var num = Number.toNumber(s);
+//        return num != 0 && Math.abs(num) != num;
+//    } catch (e) {
 //        return false;
 //    }
+//};
+
+/**
+ * Determines whether or not the object is a positive number, excludes Zero.
+ *
+ * @static
+ * @method isPositive
+ * @param {String|Number} s
+ * @return {Boolean}
+ */
+Number.isPositive = function (s) {
+
+    try {
+
+        var num = Number.toNumber(s);
+        return num != 0 && (num.toString()).indexOf("-") == -1;
+    } catch (e) {
+        return false;
+    }
+};
+
+//Number.isPositive = function (s) {
+//
+//    try {
+//
+//        var num = Number.toNumber(s);
+//        return num != 0 && Math.abs(num) == num;
+//    } catch (e) {
+//        return false;
+//    }
+//};
+
+
+/**
+ * Returns the length of decimal bit.
+ *
+ * @method decLength
+ * @return {Int}
+ */
+Number.prototype.decLength = function () {
+
+    var str = this.toString();
+    var pos = str.indexOf(".");
+    var len = str.length;
+    return (pos < 0 || pos >= len) ? 0 : ( len - pos - 1 );
+};
+
+/**
+ * Returns the length of integer bit.
+ *
+ * @method intLength
+ * @return {Int}
+ */
+Number.prototype.intLength = function () {
+
+    var str = this.toString();
+    var pos = str.indexOf(".");
+    var len = str.length;
+
+    return (pos < 0 || pos >= len) ? len : pos;
+};
+
+/**
+ * Precision multiplication.
+ *
+ * @method mul
+ * @param {Number|String} s
+ * @return {Number}
+ * @throws {IllegalArgumentException} when The argument is null or not a number
+ */
+Number.prototype.mul = function (s) {
+
+    var num = Number.toNumber(s);
+
+    // TODO
 };
 
 /**********************************************
@@ -1190,7 +1324,7 @@ JSDK.lang.stringifyJSON = function (source, depth) {
     var depth = depth || 0;
 
     if (depth >= this._JSON_MAX_DEPTH) {
-        throw new TypeError("CYCLIC_REFERENCE_ERROR");
+        throw new StackOverflowException("The JSON object is to deep.");
     }
 
     // "null" or "undefined"
